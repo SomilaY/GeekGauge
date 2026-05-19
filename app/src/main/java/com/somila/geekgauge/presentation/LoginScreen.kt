@@ -89,97 +89,90 @@ fun LoginScreen(
                     fontWeight = FontWeight.Bold
                 )
 
-                Column(
-                    modifier = Modifier
-                        .padding(5.dp),
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ) {
-
-                    Text(
-                        text = "Enter your details below",
-                        style = MaterialTheme.typography.bodySmall,
-                        color = accentColor,
-                        fontWeight = FontWeight.Bold
-                    )
-
-                    Spacer(modifier = Modifier.height(32.dp))
-
-                    // Email
-                    OutlinedTextField(
-                        value = email,
-                        onValueChange = { email = it },
-                        label = { Text("Email") },
-                        singleLine = true,
-                        shape = RoundedCornerShape(12.dp),
-                        modifier = Modifier.fillMaxWidth(),
-                        colors = OutlinedTextFieldDefaults.colors(
-                            focusedBorderColor = primaryColor,
-                            unfocusedBorderColor = accentColor,
-                            focusedLabelColor = primaryColor,
-                            cursorColor = primaryColor
-                        )
-                    )
-
-                    Spacer(modifier = Modifier.height(16.dp))
-
-                    // Password
-                    OutlinedTextField(
-                        value = password,
-                        onValueChange = { password = it },
-                        label = { Text("Password") },
-                        singleLine = true,
-                        visualTransformation =
-                            if (passwordVisible)
-                                VisualTransformation.None
-                            else
-                                PasswordVisualTransformation(),
-
-                        trailingIcon = {
-                            TextButton(
-                                onClick = {
-                                    passwordVisible = !passwordVisible
-                                }
-                            ) {
-                                Text(
-                                    if (passwordVisible) "Hide" else "Show",
-                                    color = primaryColor,
-                                )
-                            }
-                        },
-
-                        shape = RoundedCornerShape(12.dp),
-                        modifier = Modifier.fillMaxWidth(),
-
-                        colors = OutlinedTextFieldDefaults.colors(
-                            focusedBorderColor = primaryColor,
-                            unfocusedBorderColor = accentColor,
-                            focusedLabelColor = primaryColor,
-                            cursorColor = primaryColor
-                        )
-                    )
-
-                    Spacer(modifier = Modifier.height(24.dp))
-
-                    Button(
-                        onClick = {
-                            viewModel.login(email, password)
-                        },
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(52.dp),
-
-                        shape = RoundedCornerShape(10.dp),
-
-                        colors = ButtonDefaults.buttonColors(
-                            containerColor = primaryColor,
-                            contentColor = backgroundColor
-                        ),
-                    ) {
-                        Text("Login")
-                    }
-                }
+                Text(
+                    text = "Enter your details below",
+                    style = MaterialTheme.typography.labelSmall,
+                    color = primaryColor
+                )
 
                 Spacer(modifier = Modifier.height(15.dp))
+
+                // Email
+                OutlinedTextField(
+                    value = email,
+                    onValueChange = { email = it },
+                    label = { Text("Email") },
+                    singleLine = true,
+                    shape = RoundedCornerShape(12.dp),
+                    modifier = Modifier.fillMaxWidth(),
+                    colors = OutlinedTextFieldDefaults.colors(
+                        focusedBorderColor = primaryColor,
+                        unfocusedBorderColor = accentColor,
+                        focusedLabelColor = primaryColor,
+                        cursorColor = primaryColor
+                    )
+                )
+
+                Spacer(modifier = Modifier.height(16.dp))
+
+                // Password
+                OutlinedTextField(
+                    value = password,
+                    onValueChange = { password = it },
+                    label = { Text("Password") },
+                    singleLine = true,
+                    visualTransformation =
+                        if (passwordVisible)
+                            VisualTransformation.None
+                        else
+                            PasswordVisualTransformation(),
+
+                    trailingIcon = {
+                        TextButton(
+                            onClick = {
+                                passwordVisible = !passwordVisible
+                            }
+                        ) {
+                            Text(
+                                if (passwordVisible) "Hide" else "Show",
+                                color = primaryColor,
+                                style = MaterialTheme.typography.labelSmall,
+                            )
+                        }
+                    },
+
+                    shape = RoundedCornerShape(12.dp),
+                    modifier = Modifier.fillMaxWidth(),
+
+                    colors = OutlinedTextFieldDefaults.colors(
+                        focusedBorderColor = primaryColor,
+                        unfocusedBorderColor = accentColor,
+                        focusedLabelColor = primaryColor,
+                        cursorColor = primaryColor
+                    )
+                )
+
+                Spacer(modifier = Modifier.height(24.dp))
+
+                Button(
+                    onClick = {
+                        navController.navigate("trainerDashboard")
+                    },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(52.dp),
+
+                    shape = RoundedCornerShape(10.dp),
+
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = primaryColor,
+                        contentColor = backgroundColor
+                    ),
+                ) {
+                    Text("Login")
+                }
+
+                Spacer(modifier = Modifier.height(10.dp))
 
                 Column(
                     modifier = Modifier
@@ -190,25 +183,24 @@ fun LoginScreen(
                     Text(
                         text = "Forgot your password?",
                         style = MaterialTheme.typography.bodySmall,
-                        color = accentColor,
+                        color = primaryColor,
                         fontWeight = FontWeight.Bold
                     )
                 }
+            }
 
+            loginState?.let { user ->
+                when (user.role) {
+                    UserRole.TRAINER ->
+                        navController.navigate("trainerDashboard")
 
-
-                loginState?.let { user ->
-                    when (user.role) {
-                        UserRole.TRAINER ->
-                            navController.navigate("trainerDashboard")
-
-                        UserRole.GEEK ->
-                            navController.navigate("geekDashboard")
-                    }
+                    UserRole.GEEK ->
+                        navController.navigate("geekDashboard")
                 }
             }
         }
     }
 }
+
 
 
