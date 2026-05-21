@@ -13,6 +13,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.compose.rememberNavController
 import com.somila.geekgauge.navigation.AppNavHost
+import com.somila.geekgauge.navigation.navbar.RootScreen
 import com.somila.geekgauge.ui.theme.GeekGaugeTheme
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -21,8 +22,7 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
-            val navController = rememberNavController()
-            AppNavHost(navController)
+            RootScreen()
         }
     }
 }
