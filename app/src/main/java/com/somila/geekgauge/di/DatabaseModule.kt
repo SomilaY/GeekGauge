@@ -2,13 +2,14 @@ package com.somila.geekgauge.di
 
 import android.content.Context
 import androidx.room.Room
-import com.somila.geekgauge.data.local.dao.TranscriptDao
-import com.somila.geekgauge.data.local.dao.ReportDao
 import com.somila.geekgauge.data.local.GeekGaugeDatabase
+import com.somila.geekgauge.data.local.dao.ReportDao
 import com.somila.geekgauge.data.local.dao.SessionDao
+import com.somila.geekgauge.data.local.dao.TranscriptDao
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
+import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import javax.inject.Singleton
 
@@ -18,12 +19,14 @@ object DatabaseModule {
 
     @Provides
     @Singleton
-    fun provideDatabase(context: Context): GeekGaugeDatabase {
+    fun provideDatabase(@ApplicationContext context: Context): GeekGaugeDatabase {
         return Room.databaseBuilder(
             context,
             GeekGaugeDatabase::class.java,
             "Geek_Gauge_db"
-        ).build()
+        )
+            .fallbackToDestructiveMigration()
+            .build()
     }
 
     @Provides

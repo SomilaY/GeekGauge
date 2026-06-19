@@ -4,12 +4,13 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Face
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Person
+import androidx.compose.material.icons.filled.Settings
 import androidx.compose.ui.graphics.vector.ImageVector
 
 sealed class BottomNavItem(
     val route: String,
     val label: String,
-    val icon: ImageVector
+    val icon: ImageVector,
 ) {
 
     object Home : BottomNavItem(
@@ -24,9 +25,9 @@ sealed class BottomNavItem(
         icon = Icons.Default.Face
     )
 
-    object Profile : BottomNavItem(
-        route = "profile",
-        label = "Profile",
-        icon = Icons.Default.Person
+    object Settings : BottomNavItem(
+        route = "settings",
+        label = "Settings",
+        icon = Icons.Default.Settings
     )
 }

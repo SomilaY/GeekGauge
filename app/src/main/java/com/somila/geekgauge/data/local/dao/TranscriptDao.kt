@@ -4,14 +4,18 @@ import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
+import androidx.room.Update
 import com.somila.geekgauge.data.local.entities.TranscriptEntity
 import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface TranscriptDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insert(transcript: TranscriptEntity)
+    suspend fun insertTranscript(transcript: TranscriptEntity)
 
-    @Query("SELECT * FROM transcripts WHERE sessionId = :sessionId")
-    fun getTranscriptForSession(sessionId: String): Flow<TranscriptEntity?>
+    @Update
+    suspend fun updateTranscript(transcript: TranscriptEntity)
+
+    @Query("SELECT * FROM transcripts WHERE sessionId = :sessionId LIMIT 1")
+    suspend fun getTranscriptBySessionId(sessionId: String): TranscriptEntity?
 }

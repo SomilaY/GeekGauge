@@ -11,7 +11,7 @@ import com.somila.geekgauge.data.local.entities.ReportEntity
 
 @Database(
     entities = [SessionEntity::class, TranscriptEntity::class, ReportEntity::class],
-    version = 1
+    version = 3
 )
 abstract class GeekGaugeDatabase : RoomDatabase() {
     abstract fun sessionDao(): SessionDao

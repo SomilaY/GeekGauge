@@ -5,6 +5,7 @@ data class Cohort(
     val name: String,
     val programme: String,
     val startDate: String,
+    val endDate: String,
     val geeks: List<User>
 )
 
