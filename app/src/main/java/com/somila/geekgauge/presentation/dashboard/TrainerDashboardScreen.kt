@@ -73,24 +73,17 @@ fun AppScaffold(
     navController: NavHostController,
     content: @Composable (PaddingValues) -> Unit
 ) {
-
-    Scaffold(
-        containerColor = Color.Transparent,
-
-        bottomBar = {
-            FloatingBottomNav(navController)
-        }
-
-    ) { padding ->
-
-        Box(
-            modifier = Modifier
-                .fillMaxSize()
-                .background(backgroundColor)
-        ) {
-
+    // The Box here handles the layering: content on bottom, nav on top
+    Box(modifier = Modifier.fillMaxSize()) {
+        Scaffold(
+            containerColor = Color.Transparent,
+            // bottomBar = { ... } // REMOVE THIS
+        ) { padding ->
             content(padding)
         }
+
+        // Add the nav bar here as an overlay
+        FloatingBottomNav(navController)
     }
 }
 
@@ -100,20 +93,13 @@ fun TrainerDashboardScreen(
     navController: NavHostController,
     viewModel: TrainerDashboardViewModel = hiltViewModel()
 ) {
-
     val cohorts by viewModel.cohorts.collectAsState()
     val searchQuery by viewModel.searchQuery.collectAsState()
 
-    val formatter = remember {
-        DateTimeFormatter.ofPattern("yyyy-MM-dd")
-    }
-
-    val today = remember {
-        LocalDate.now()
-    }
+    val formatter = remember { DateTimeFormatter.ofPattern("yyyy-MM-dd") }
+    val today = remember { LocalDate.now() }
 
     val stats = remember(cohorts) {
-
         listOf(
             DashboardStat(
                 title = "Active Cohorts",
@@ -142,56 +128,34 @@ fun TrainerDashboardScreen(
         )
     }
 
-    Scaffold(
-        containerColor = Color(0xFFF7F8F6),
-
-    ) { padding ->
+    AppScaffold(navController) { padding ->   // ← was Scaffold
 
         LazyColumn(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(padding),
-
             contentPadding = PaddingValues(
                 horizontal = 16.dp,
                 vertical = 16.dp
             ),
-
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
+            item { DashboardHeader() }
 
             item {
-
-                DashboardHeader()
-            }
-
-            item {
-
                 DashboardSearchBar(
                     query = searchQuery,
-                    onQueryChange = {
-                        viewModel.onSearchQueryChanged(it)
-                    }
+                    onQueryChange = { viewModel.onSearchQueryChanged(it) }
                 )
             }
 
-            item {
+            item { SectionLabel("OVERVIEW") }
 
-                SectionLabel("OVERVIEW")
-            }
+            item { StatsGrid(stats) }
 
-            item {
-
-                StatsGrid(stats)
-            }
+            item { SectionLabel("RECENT REPORTS") }
 
             item {
-
-                SectionLabel("RECENT REPORTS")
-            }
-
-            item {
-
                 ReportCard(
                     title = "Kabelo Mokoena — Check-up",
                     subtitle = "Android Beginners • 2 days ago",
@@ -199,75 +163,29 @@ fun TrainerDashboardScreen(
                 )
             }
 
-            item {
-
-                SectionLabel("COHORT PROGRESS")
-            }
+            item { SectionLabel("COHORT PROGRESS") }
 
             items(cohorts) { cohort ->
-
-                val start =
-                    LocalDate.parse(
-                        cohort.startDate,
-                        formatter
-                    )
-
-                val end =
-                    LocalDate.parse(
-                        cohort.endDate,
-                        formatter
-                    )
-
-                val totalDays =
-                    ChronoUnit.DAYS.between(
-                        start,
-                        end
-                    ).toFloat()
-
-                val elapsed =
-                    ChronoUnit.DAYS.between(
-                        start,
-                        today
-                    )
-                        .coerceAtLeast(0)
-                        .toFloat()
-
-                val progress =
-                    if (totalDays > 0)
-                        (elapsed / totalDays)
-                            .coerceIn(0f, 1f)
-                    else
-                        1f
+                val start = LocalDate.parse(cohort.startDate, formatter)
+                val end = LocalDate.parse(cohort.endDate, formatter)
+                val totalDays = ChronoUnit.DAYS.between(start, end).toFloat()
+                val elapsed = ChronoUnit.DAYS.between(start, today)
+                    .coerceAtLeast(0).toFloat()
+                val progress = if (totalDays > 0)
+                    (elapsed / totalDays).coerceIn(0f, 1f) else 1f
 
                 CohortProgressCard(
                     cohort = cohort,
                     progress = progress,
-                    onClick = {
-                        navController.navigate(
-                            "cohort/${cohort.id}"
-                        )
-                    }
+                    onClick = { navController.navigate("cohort/${cohort.id}") }
                 )
             }
 
-            item {
+            item { SectionLabel("THIS WEEK") }
 
-                SectionLabel("THIS WEEK")
-            }
+            item { WeekStrip() }
 
-            item {
-
-                WeekStrip()
-            }
-
-            item {
-
-                Spacer(
-                    modifier = Modifier.height(
-                        80.dp
-                    )
-                )
-            }
+            item { Spacer(Modifier.height(80.dp)) }
         }
     }
 }
@@ -369,7 +287,7 @@ fun StatsGrid(
     LazyVerticalGrid(
         columns = GridCells.Fixed(2),
         userScrollEnabled = false,
-        modifier = Modifier.height(250.dp),
+        modifier = Modifier.height(270.dp),
         horizontalArrangement = Arrangement.spacedBy(10.dp),
         verticalArrangement = Arrangement.spacedBy(10.dp)
     ) {
@@ -472,7 +390,7 @@ fun ReportCard(
                 Text(
                     text = title,
                     fontWeight = FontWeight.SemiBold,
-                    color = backgroundColor
+                    color = backgroundColor,
                 )
                 Text(
                     text = subtitle,

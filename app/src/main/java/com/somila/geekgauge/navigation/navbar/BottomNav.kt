@@ -18,14 +18,18 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -33,6 +37,7 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.somila.geekgauge.presentation.geek.GeekDetailScreen
 import com.somila.geekgauge.presentation.dashboard.TrainerDashboardScreen
+import com.somila.geekgauge.ui.theme.backgroundColor
 import com.somila.geekgauge.ui.theme.primaryColor
 
 @RequiresApi(Build.VERSION_CODES.O)
@@ -69,22 +74,17 @@ fun FloatingBottomNav(navController: NavHostController) {
 
     Box(
         modifier = Modifier
-            .fillMaxWidth()
-            .padding(bottom = 22.dp),
+            .fillMaxSize()
+            .padding(bottom = 24.dp),
         contentAlignment = Alignment.BottomCenter
     ) {
-
-        Card(
+        Surface(
             modifier = Modifier
-                .fillMaxWidth(0.88f)
-                .height(82.dp),
-            shape = RoundedCornerShape(40.dp),
-            colors = CardDefaults.cardColors(
-                containerColor = Color.White
-            ),
-            elevation = CardDefaults.cardElevation(
-                defaultElevation = 5.dp
-            )
+                .fillMaxWidth(0.75f)
+                .height(65.dp)
+                .shadow(elevation = 16.dp, shape = RoundedCornerShape(32.dp)),
+            shape = RoundedCornerShape(32.dp),
+            color = primaryColor.copy(alpha = 0.95f)
         ) {
             Row(
                 modifier = Modifier
@@ -102,6 +102,7 @@ fun FloatingBottomNav(navController: NavHostController) {
                             .clip(RoundedCornerShape(18.dp))
                             .clickable {
                                 navController.navigate(item.route) {
+                                    popUpTo(navController.graph.findStartDestination().id) { saveState = true }
                                     launchSingleTop = true
                                     restoreState = true
                                 }
@@ -111,16 +112,17 @@ fun FloatingBottomNav(navController: NavHostController) {
                         Icon(
                             imageVector = item.icon,
                             contentDescription = item.label,
-                            tint = if (selected) primaryColor else primaryColor.copy(alpha = 0.6f),
-                            modifier = Modifier.size(26.dp)
+                            tint = if (selected) backgroundColor else backgroundColor.copy(alpha = 0.5f),
+                            modifier = Modifier.size(22.dp)
                         )
 
-                        AnimatedVisibility(selected) {
+                        AnimatedVisibility(visible = selected) {
                             Text(
                                 text = item.label,
-                                color = primaryColor,
+                                color = backgroundColor,
                                 fontWeight = FontWeight.SemiBold,
-                                style = MaterialTheme.typography.bodyMedium
+                                style = MaterialTheme.typography.bodySmall,
+                                fontSize = 10.sp
                             )
                         }
                     }

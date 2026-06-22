@@ -9,6 +9,7 @@ import androidx.datastore.preferences.preferencesDataStore
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.somila.geekgauge.domain.repository.AuthRepository
+import com.somila.geekgauge.domain.repository.SettingsRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -24,13 +25,11 @@ val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = "se
 
 @HiltViewModel
 class SettingsViewModel @Inject constructor(
-    @ApplicationContext private val context: Context
+    private val settingsRepository: SettingsRepository
 ) : ViewModel() {
 
-    private val NOTIFICATIONS_ENABLED = booleanPreferencesKey("notifications_enabled")
-
-    val notificationsEnabled: StateFlow<Boolean> = context.dataStore.data
-        .map { prefs -> prefs[NOTIFICATIONS_ENABLED] ?: true }
+    val notificationsEnabled: StateFlow<Boolean> = settingsRepository
+        .notificationsEnabledFlow()
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), true)
 
     private val _logoutState = MutableStateFlow<LogoutState>(LogoutState.Idle)
@@ -38,9 +37,7 @@ class SettingsViewModel @Inject constructor(
 
     fun toggleNotifications(enabled: Boolean) {
         viewModelScope.launch {
-            context.dataStore.edit { prefs ->
-                prefs[NOTIFICATIONS_ENABLED] = enabled
-            }
+            settingsRepository.setNotificationsEnabled(enabled)
         }
     }
 

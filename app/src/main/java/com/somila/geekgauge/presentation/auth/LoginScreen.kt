@@ -1,10 +1,13 @@
 package com.somila.geekgauge.presentation.auth
 
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -32,9 +35,12 @@ fun LoginScreen(
 
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
+    var firstName by remember { mutableStateOf("") }
+    var lastName by remember { mutableStateOf("") }
     var passwordVisible by remember { mutableStateOf(false) }
+    var isSignUp by remember { mutableStateOf(false) }
+    var selectedRole by remember { mutableStateOf(UserRole.TRAINER) }
 
-    // Navigation and side effects belong in LaunchedEffect, never in composition
     LaunchedEffect(loginState) {
         when (val state = loginState) {
             is LoginState.Success -> {
@@ -56,7 +62,7 @@ fun LoginScreen(
         Box(
             modifier = Modifier
                 .fillMaxSize()
-                .background(backgroundColor)
+                .background(Color.White)
         )
 
         Box(
@@ -80,7 +86,8 @@ fun LoginScreen(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(horizontal = 24.dp)
-                .align(Alignment.Center),
+                .align(Alignment.Center)
+                .verticalScroll(rememberScrollState()),
             shape = RoundedCornerShape(28.dp),
             colors = CardDefaults.cardColors(containerColor = Color.White),
             elevation = CardDefaults.cardElevation(8.dp)
@@ -91,19 +98,85 @@ fun LoginScreen(
             ) {
 
                 Text(
-                    text = "Welcome Back",
+                    text = if (isSignUp) "Create Account" else "Welcome Back",
                     style = MaterialTheme.typography.headlineMedium,
                     color = primaryColor,
                     fontWeight = FontWeight.Bold
                 )
 
                 Text(
-                    text = "Enter your details below",
+                    text = if (isSignUp) "Fill in your details to get started"
+                    else "Enter your details below",
                     style = MaterialTheme.typography.labelSmall,
                     color = primaryColor
                 )
 
-                Spacer(modifier = Modifier.height(15.dp))
+                Spacer(Modifier.height(16.dp))
+
+                // Name fields — sign up only
+                AnimatedVisibility(visible = isSignUp) {
+                    Column {
+                        Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                            OutlinedTextField(
+                                value = firstName,
+                                onValueChange = { firstName = it },
+                                label = { Text("First Name") },
+                                singleLine = true,
+                                modifier = Modifier.weight(1f),
+                                shape = RoundedCornerShape(12.dp),
+                                enabled = loginState !is LoginState.Loading,
+                                colors = OutlinedTextFieldDefaults.colors(
+                                    focusedBorderColor = primaryColor,
+                                    unfocusedBorderColor = primaryColor,
+                                    focusedLabelColor = primaryColor,
+                                    cursorColor = primaryColor
+                                )
+                            )
+                            OutlinedTextField(
+                                value = lastName,
+                                onValueChange = { lastName = it },
+                                label = { Text("Last Name") },
+                                singleLine = true,
+                                modifier = Modifier.weight(1f),
+                                shape = RoundedCornerShape(12.dp),
+                                enabled = loginState !is LoginState.Loading,
+                                colors = OutlinedTextFieldDefaults.colors(
+                                    focusedBorderColor = primaryColor,
+                                    unfocusedBorderColor = primaryColor,
+                                    focusedLabelColor = primaryColor,
+                                    cursorColor = primaryColor
+                                )
+                            )
+                        }
+
+                        Spacer(Modifier.height(8.dp))
+
+                        // Role selector
+                        Text(
+                            text = "I am a...",
+                            style = MaterialTheme.typography.labelSmall,
+                            color = primaryColor,
+                            modifier = Modifier.padding(bottom = 6.dp)
+                        )
+
+                        Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                            RoleChip(
+                                label = "Trainer",
+                                selected = selectedRole == UserRole.TRAINER,
+                                onClick = { selectedRole = UserRole.TRAINER },
+                                modifier = Modifier.weight(1f)
+                            )
+                            RoleChip(
+                                label = "Geek",
+                                selected = selectedRole == UserRole.GEEK,
+                                onClick = { selectedRole = UserRole.GEEK },
+                                modifier = Modifier.weight(1f)
+                            )
+                        }
+
+                        Spacer(Modifier.height(8.dp))
+                    }
+                }
 
                 OutlinedTextField(
                     value = email,
@@ -115,13 +188,13 @@ fun LoginScreen(
                     enabled = loginState !is LoginState.Loading,
                     colors = OutlinedTextFieldDefaults.colors(
                         focusedBorderColor = primaryColor,
-                        unfocusedBorderColor = accentColor,
+                        unfocusedBorderColor = primaryColor,
                         focusedLabelColor = primaryColor,
                         cursorColor = primaryColor
                     )
                 )
 
-                Spacer(modifier = Modifier.height(16.dp))
+                Spacer(Modifier.height(12.dp))
 
                 OutlinedTextField(
                     value = password,
@@ -146,13 +219,12 @@ fun LoginScreen(
                     modifier = Modifier.fillMaxWidth(),
                     colors = OutlinedTextFieldDefaults.colors(
                         focusedBorderColor = primaryColor,
-                        unfocusedBorderColor = accentColor,
+                        unfocusedBorderColor = primaryColor,
                         focusedLabelColor = primaryColor,
                         cursorColor = primaryColor
                     )
                 )
 
-                // Error message
                 AnimatedVisibility(visible = loginState is LoginState.Error) {
                     Text(
                         text = (loginState as? LoginState.Error)?.message ?: "",
@@ -162,10 +234,18 @@ fun LoginScreen(
                     )
                 }
 
-                Spacer(modifier = Modifier.height(24.dp))
+                Spacer(Modifier.height(20.dp))
 
                 Button(
-                    onClick = { viewModel.login(email, password) },
+                    onClick = {
+                        if (isSignUp) {
+                            viewModel.register(
+                                firstName, lastName, email, password, selectedRole
+                            )
+                        } else {
+                            viewModel.login(email, password)
+                        }
+                    },
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(52.dp),
@@ -173,7 +253,7 @@ fun LoginScreen(
                     enabled = loginState !is LoginState.Loading,
                     colors = ButtonDefaults.buttonColors(
                         containerColor = primaryColor,
-                        contentColor = backgroundColor
+                        contentColor = Color.White
                     )
                 ) {
                     if (loginState is LoginState.Loading) {
@@ -183,10 +263,64 @@ fun LoginScreen(
                             strokeWidth = 2.dp
                         )
                     } else {
-                        Text("Login")
+                        Text(if (isSignUp) "Create Account" else "Login")
                     }
+                }
+
+                Spacer(Modifier.height(12.dp))
+
+                // Toggle between login and sign up
+                TextButton(
+                    onClick = {
+                        isSignUp = !isSignUp
+                        viewModel.resetState()
+                        firstName = ""
+                        lastName = ""
+                        email = ""
+                        password = ""
+                    }
+                ) {
+                    Text(
+                        text = if (isSignUp)
+                            "Already have an account? Log in"
+                        else
+                            "Don't have an account? Sign up",
+                        color = primaryColor,
+                        style = MaterialTheme.typography.bodySmall
+                    )
                 }
             }
         }
+    }
+}
+
+@Composable
+private fun RoleChip(
+    label: String,
+    selected: Boolean,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    OutlinedButton(
+        onClick = onClick,
+        modifier = modifier.height(42.dp),
+        shape = RoundedCornerShape(12.dp),
+        border = BorderStroke(
+            width = if (selected) 2.dp else 1.dp,
+            color = if (selected) primaryColor else primaryColor.copy(alpha = 0.3f)
+        ),
+        colors = ButtonDefaults.outlinedButtonColors(
+            containerColor = if (selected)
+                primaryColor.copy(alpha = 0.08f)
+            else
+                Color.Transparent
+        )
+    ) {
+        Text(
+            text = label,
+            color = primaryColor,
+            fontWeight = if (selected) FontWeight.Bold else FontWeight.Normal,
+            style = MaterialTheme.typography.bodySmall
+        )
     }
 }

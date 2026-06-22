@@ -106,7 +106,7 @@ fun GeekDetailScreen(
 
     AppScaffold(navController) { padding ->
 
-        cohort?.let { currentCohort ->
+    cohort?.let { currentCohort ->
 
             LazyColumn(
                 modifier = Modifier
@@ -169,7 +169,7 @@ fun GeekDetailScreen(
 
         } ?: Box(
             modifier = Modifier.fillMaxSize(),
-            contentAlignment = Alignment.Center
+            contentAlignment = Alignment.Center,
         ) {
             CircularProgressIndicator(color = primaryColor)
         }
@@ -372,7 +372,7 @@ private fun GeekMemberCard(
 ) {
     Card(
         modifier = Modifier.fillMaxWidth(),
-        shape = RoundedCornerShape(20.dp),
+        shape = RoundedCornerShape(16.dp),
         border = BorderStroke(1.dp, primaryColor),
         colors = CardDefaults.cardColors(containerColor = primaryColor)
     ) {

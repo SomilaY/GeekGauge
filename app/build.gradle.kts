@@ -114,4 +114,5 @@ dependencies {
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.11.0")
     implementation("com.jakewharton.retrofit:retrofit2-kotlinx-serialization-converter:1.0.0")
     implementation("com.google.accompanist:accompanist-permissions:0.34.0")
+    implementation("androidx.compose.ui:ui-text-google-fonts:1.7.0")
 }

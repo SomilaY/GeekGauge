@@ -3,11 +3,13 @@ package com.somila.geekgauge.di
 import com.somila.geekgauge.data.repository.AuthRepositoryImpl
 import com.somila.geekgauge.data.repository.CohortRepositoryImpl
 import com.somila.geekgauge.data.repository.ReportRepositoryImpl
+import com.somila.geekgauge.data.repository.SettingsRepositoryImpl
 import com.somila.geekgauge.domain.repository.AuthRepository
 import com.somila.geekgauge.domain.repository.CohortRepository
 import com.somila.geekgauge.domain.repository.ReportRepository
 import com.somila.geekgauge.domain.repository.SessionRepository
 import com.somila.geekgauge.domain.repository.SessionRepositoryImpl
+import com.somila.geekgauge.domain.repository.SettingsRepository
 import com.somila.geekgauge.domain.repository.TranscriptRepository
 import com.somila.geekgauge.domain.repository.TranscriptRepositoryImpl
 import dagger.Binds
@@ -49,4 +51,11 @@ abstract class RepositoryModule {
     abstract fun bindAuthRepository(
         impl: AuthRepositoryImpl
     ): AuthRepository
+
+    @Binds
+    @Singleton
+    abstract fun bindSettingsRepository(
+        impl: SettingsRepositoryImpl
+    ): SettingsRepository
 }
+

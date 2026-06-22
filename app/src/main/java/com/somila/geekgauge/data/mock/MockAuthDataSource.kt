@@ -8,7 +8,7 @@ import javax.inject.Singleton
 @Singleton
 class MockAuthDataSource @Inject constructor() {
 
-    private val users = listOf(
+    private val users = mutableListOf(
         User(
             id = "t001",
             firstName = "Sipho",
@@ -61,9 +61,31 @@ class MockAuthDataSource @Inject constructor() {
         }
     }
 
-    fun getAllUsers(): List<User> = users
+    fun register(
+        firstName: String,
+        lastName: String,
+        email: String,
+        password: String,
+        role: UserRole
+    ): Result<User> {
+        if (users.any { it.email == email }) {
+            return Result.failure(Exception("An account with this email already exists"))
+        }
 
+        val newUser = User(
+            id = "u_${System.currentTimeMillis()}",
+            firstName = firstName,
+            lastName = lastName,
+            email = email,
+            password = password,
+            role = role
+        )
+
+        users.add(newUser)
+        return Result.success(newUser)
+    }
+
+    fun getAllUsers(): List<User> = users.toList()
     fun getUserById(id: String): User? = users.firstOrNull { it.id == id }
-
     fun getGeeks(): List<User> = users.filter { it.role == UserRole.GEEK }
 }

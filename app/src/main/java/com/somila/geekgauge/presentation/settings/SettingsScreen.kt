@@ -22,6 +22,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
+import com.somila.geekgauge.presentation.dashboard.AppScaffold
 import com.somila.geekgauge.ui.theme.accentColor
 import com.somila.geekgauge.ui.theme.backgroundColor
 import com.somila.geekgauge.ui.theme.primaryColor
@@ -33,10 +34,8 @@ fun SettingsScreen(
 ) {
     val notificationsEnabled by viewModel.notificationsEnabled.collectAsState()
     val logoutState by viewModel.logoutState.collectAsState()
-
     var showLogoutDialog by remember { mutableStateOf(false) }
 
-    // Navigate to login on logout
     LaunchedEffect(logoutState) {
         if (logoutState is LogoutState.LoggedOut) {
             navController.navigate("login") {
@@ -45,9 +44,7 @@ fun SettingsScreen(
         }
     }
 
-    Scaffold(
-        containerColor = Color(0xFFF7F8F6)
-    ) { padding ->
+    AppScaffold(navController) { padding ->   // ← was Scaffold
 
         Column(
             modifier = Modifier
@@ -56,21 +53,16 @@ fun SettingsScreen(
                 .verticalScroll(rememberScrollState()),
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
-
             Spacer(Modifier.height(4.dp))
 
-            // ── Header ──
             SettingsHeader()
 
             Column(
                 modifier = Modifier.padding(horizontal = 16.dp),
                 verticalArrangement = Arrangement.spacedBy(16.dp)
             ) {
-
-                // ── Profile card ──
                 ProfileCard()
 
-                // ── App settings ──
                 SectionLabel("APP SETTINGS")
 
                 SettingsGroup {
@@ -81,9 +73,7 @@ fun SettingsScreen(
                         checked = notificationsEnabled,
                         onCheckedChange = { viewModel.toggleNotifications(it) }
                     )
-
                     SettingsDivider()
-
                     SettingsNavigationRow(
                         icon = Icons.Default.Info,
                         title = "App Version",
@@ -92,7 +82,6 @@ fun SettingsScreen(
                     )
                 }
 
-                // ── Account ──
                 SectionLabel("ACCOUNT")
 
                 SettingsGroup {
@@ -102,9 +91,7 @@ fun SettingsScreen(
                         subtitle = "Sipho Dlamini • sipho@institute.co.za",
                         onClick = {}
                     )
-
                     SettingsDivider()
-
                     SettingsNavigationRow(
                         icon = Icons.Default.Lock,
                         title = "Role",
@@ -113,7 +100,6 @@ fun SettingsScreen(
                     )
                 }
 
-                // ── Data ──
                 SectionLabel("DATA")
 
                 SettingsGroup {
@@ -123,18 +109,14 @@ fun SettingsScreen(
                         subtitle = "View all past sessions",
                         onClick = {}
                     )
-
                     SettingsDivider()
-
                     SettingsNavigationRow(
                         icon = Icons.Default.Share,
                         title = "Export All Reports",
                         subtitle = "Download reports as PDF",
                         onClick = {}
                     )
-
                     SettingsDivider()
-
                     SettingsNavigationRow(
                         icon = Icons.Default.Delete,
                         title = "Clear Audio Files",
@@ -144,10 +126,8 @@ fun SettingsScreen(
                     )
                 }
 
-                // ── Danger zone ──
                 SectionLabel("DANGER ZONE")
 
-                // Logout button
                 Card(
                     modifier = Modifier.fillMaxWidth(),
                     shape = RoundedCornerShape(18.dp),
@@ -194,9 +174,7 @@ fun SettingsScreen(
                             )
                         }
 
-                        TextButton(
-                            onClick = { showLogoutDialog = true }
-                        ) {
+                        TextButton(onClick = { showLogoutDialog = true }) {
                             Text(
                                 text = "Log Out",
                                 color = Color(0xFFE53935),
@@ -211,7 +189,6 @@ fun SettingsScreen(
         }
     }
 
-    // ── Logout confirmation dialog ──
     if (showLogoutDialog) {
         AlertDialog(
             onDismissRequest = { showLogoutDialog = false },

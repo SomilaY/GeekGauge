@@ -5,6 +5,7 @@ import android.Manifest
 import android.graphics.drawable.Icon
 import android.os.Build
 import android.view.Surface
+import androidx.annotation.RequiresApi
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.*
 import androidx.compose.foundation.Canvas
@@ -57,6 +58,7 @@ sealed class SessionUiState {
     data class TranscriptReady(val sessionId: String) : SessionUiState()
 }
 
+@RequiresApi(Build.VERSION_CODES.O)
 @OptIn(ExperimentalPermissionsApi::class)
 @Composable
 fun SessionScreen(
@@ -112,9 +114,8 @@ fun SessionScreen(
             .background(
                 Brush.verticalGradient(
                     colors = listOf(
-                        Color(0xFF0D1512),
-                        Color(0xFF16211C),
-                        Color(0xFF0B0F0D)
+                        accentColor,
+                        Color.Black
                     )
                 )
             )
@@ -408,7 +409,7 @@ private fun SessionContent(
             .fillMaxSize()
             .background(
                 Brush.verticalGradient(
-                    listOf(Color(0xFF0B0F0D), Color(0xFF16211C), Color(0xFF0B0F0D))
+                    listOf( accentColor, Color.Black)
                 )
             )
     ) {
@@ -648,10 +649,6 @@ fun ModernControls(
             }
         }
 
-        GlassCircleButton(
-            icon = Icons.Default.Edit,
-            onClick = onEdit
-        )
     }
 }
 
@@ -705,7 +702,7 @@ fun FloatingParticles() {
                     )
                     .size(if (index % 3 == 0) 8.dp else 5.dp)
                     .background(
-                        accentColor.copy(alpha = if (index % 2 == 0) 0.2f else 0.1f),
+                        backgroundColor.copy(alpha = if (index % 2 == 0) 0.2f else 0.1f),
                         CircleShape
                     )
             )
@@ -779,7 +776,7 @@ private fun PermissionScreen(
                 Brush.verticalGradient(
                     listOf(
                         Color(0xFF0B0F0D),
-                        Color(0xFF16211C),
+                       primaryColor,
                         Color(0xFF0B0F0D)
                     )
                 )

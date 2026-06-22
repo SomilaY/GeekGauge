@@ -9,12 +9,14 @@ import android.os.Build
 import androidx.core.app.NotificationCompat
 import com.somila.geekgauge.MainActivity
 import com.somila.geekgauge.R
+import com.somila.geekgauge.domain.repository.SettingsRepository
 import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
 class NotificationHelper @Inject constructor(
-    private val context: Context
+    private val context: Context,
+    private val settingsRepository: SettingsRepository
 ) {
     companion object {
         const val RECORDING_CHANNEL_ID = "recording_channel"
@@ -65,6 +67,9 @@ class NotificationHelper @Inject constructor(
         .build()
 
     fun showReportReadyNotification(geekName: String, sessionId: String) {
+        // Check if notifications are enabled before firing
+        if (!settingsRepository.areNotificationsEnabled()) return
+
         val intent = Intent(context, MainActivity::class.java).apply {
             flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
             putExtra("navigate_to", "report/$sessionId")
@@ -88,4 +93,5 @@ class NotificationHelper @Inject constructor(
 
         notificationManager.notify(REPORT_NOTIFICATION_ID, notification)
     }
+
 }

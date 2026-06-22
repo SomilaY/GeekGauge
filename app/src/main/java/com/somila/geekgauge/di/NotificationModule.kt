@@ -2,6 +2,7 @@ package com.somila.geekgauge.di
 
 import android.content.Context
 import com.somila.geekgauge.core.NotificationHelper
+import com.somila.geekgauge.domain.repository.SettingsRepository
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -16,6 +17,7 @@ object NotificationModule {
     @Provides
     @Singleton
     fun provideNotificationHelper(
-        @ApplicationContext context: Context
-    ): NotificationHelper = NotificationHelper(context)
+        @ApplicationContext context: Context,
+        settingsRepository: SettingsRepository
+    ): NotificationHelper = NotificationHelper(context, settingsRepository)
 }

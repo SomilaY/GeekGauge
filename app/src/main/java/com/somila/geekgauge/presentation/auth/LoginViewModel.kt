@@ -2,6 +2,7 @@ package com.somila.geekgauge.presentation.auth
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.somila.geekgauge.domain.enums.UserRole
 import com.somila.geekgauge.domain.repository.AuthRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -23,7 +24,6 @@ class LoginViewModel @Inject constructor(
             _loginState.value = LoginState.Error("Please enter your email and password")
             return
         }
-
         viewModelScope.launch {
             _loginState.value = LoginState.Loading
             authRepository.login(email, password)
@@ -31,9 +31,39 @@ class LoginViewModel @Inject constructor(
                     _loginState.value = LoginState.Success(user)
                 }
                 .onFailure { error ->
-                    _loginState.value = LoginState.Error(
-                        error.message ?: "Login failed"
-                    )
+                    _loginState.value = LoginState.Error(error.message ?: "Login failed")
+                }
+        }
+    }
+
+    fun register(
+        firstName: String,
+        lastName: String,
+        email: String,
+        password: String,
+        role: UserRole
+    ) {
+        if (firstName.isBlank() || lastName.isBlank()) {
+            _loginState.value = LoginState.Error("Please enter your full name")
+            return
+        }
+        if (email.isBlank()) {
+            _loginState.value = LoginState.Error("Please enter your email")
+            return
+        }
+        if (password.length < 6) {
+            _loginState.value = LoginState.Error("Password must be at least 6 characters")
+            return
+        }
+
+        viewModelScope.launch {
+            _loginState.value = LoginState.Loading
+            authRepository.register(firstName, lastName, email, password, role)
+                .onSuccess { user ->
+                    _loginState.value = LoginState.Success(user)
+                }
+                .onFailure { error ->
+                    _loginState.value = LoginState.Error(error.message ?: "Registration failed")
                 }
         }
     }

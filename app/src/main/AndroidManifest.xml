@@ -15,9 +15,9 @@
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:fullBackupContent="@xml/backup_rules"
         android:name=".GeekGauge"
-        android:icon="@mipmap/ic_launcher"
+        android:icon="@mipmap/geekgaugelogo"
         android:label="@string/app_name"
-        android:roundIcon="@mipmap/ic_launcher_round"
+        android:roundIcon="@mipmap/geekgaugelogo"
         android:supportsRtl="true"
         android:theme="@style/Theme.GeekGauge">
 
